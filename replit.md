@@ -1,76 +1,102 @@
-# AI Agents Portfolio
+# Nexus AI Agency Portfolio
 
 ## Overview
-This is a modern portfolio website built with React and Vite, designed to showcase working AI agents that clients can interact with live. The website features a clean, professional design with a dark theme and gradient accents.
+A production-ready, high-performance portfolio website for an AI Automation Agency founded by Rushil CV and Dhanush Battu. The site demonstrates technical competence through live interactive demos ("Micro-Apps") and is designed to convert high-ticket international clients.
+
+## Tech Stack
+- **Frontend**: React 19 + Vite 7
+- **Styling**: Tailwind CSS with custom design system
+- **Animation**: Framer Motion
+- **Icons**: Lucide React
+- **AI Engine**: Google Gemini API (@google/genai)
+- **Utilities**: jsPDF (PDF generation), xlsx (Excel parsing)
+
+## Design System
+- **Theme**: "High-Finance Tech" - authoritative, clean, expensive
+- **Canvas Colors**: Deep Obsidian (#0B0F19) to Slate (#1E293B)
+- **Accent**: Electric Lime (#D9F99D)
+- **Typography**: Space Grotesk (headers), Inter (body)
+- **Effects**: Heavy glassmorphism with white noise textures
 
 ## Project Structure
-
 ```
 /
 ├── src/
-│   ├── App.jsx          # Main application component with AI agents showcase
-│   ├── App.css          # Application styles with modern gradients
-│   ├── main.jsx         # React entry point
-│   └── index.css        # Global styles
-├── index.html           # HTML template
-├── vite.config.js       # Vite configuration (port 5000, host allowance)
-├── package.json         # Project dependencies and scripts
-└── .gitignore          # Git ignore rules
+│   ├── App.jsx                    # Main app with layout
+│   ├── main.jsx                   # React entry point
+│   ├── index.css                  # Global styles + Tailwind
+│   └── components/
+│       ├── Hero.jsx               # Hero section with animations
+│       ├── TrustBar.jsx           # Tech stack marquee
+│       ├── Chatbot.jsx            # Gemini-powered chat widget
+│       ├── InvoiceEngine.jsx      # PDF invoice generator
+│       ├── ContentMultiplier.jsx  # Social media content AI
+│       ├── DataExtractor.jsx      # Document parsing demo
+│       ├── TeamSection.jsx        # Founders section
+│       └── Footer.jsx             # Footer with CTA
+├── index.html                     # HTML template
+├── vite.config.js                 # Vite config (port 5000)
+├── tailwind.config.js             # Custom Tailwind theme
+└── package.json                   # Dependencies
 ```
 
-## Tech Stack
-- **Frontend Framework**: React 19.2.1
-- **Build Tool**: Vite 7.2.6
-- **Styling**: Vanilla CSS with modern gradients and animations
-- **Language**: JavaScript (ES Modules)
+## Interactive Demos (Micro-Apps)
+
+### 1. Agency Brain Chatbot
+- Floating chat widget powered by Gemini AI
+- Professional, sales-oriented persona "Nexus Assistant"
+- Falls back to mock responses if API key missing
+
+### 2. Instant Invoice Engine
+- Split-screen UI (input vs. live preview)
+- Manual form input or drag-drop .xlsx bulk import
+- PDF generation with jsPDF
+- Success animations
+
+### 3. Content Multiplier
+- One-line input generates 3 platform variations
+- LinkedIn (professional), Instagram (casual), Facebook (community)
+- One-click copy functionality
+- Gemini-powered with mock fallback
+
+### 4. Document Data Extractor
+- Scanner visual with animated laser line
+- Simulates PDF/invoice extraction
+- Clean React table output with confidence scores
+
+## Founders Section
+- Rushil CV - Lead AI Architect
+- Dhanush Battu - Head of Operations & Strategy
+- Glowing ring borders with hover effects
+- LinkedIn and email links
+
+## Environment Variables
+- `VITE_GEMINI_API_KEY` - Required for live AI features (optional, has mock fallback)
 
 ## Development
-
-### Running Locally
-The project is configured to run on port 5000 with the following command:
 ```bash
-npm run dev
+npm run dev      # Start dev server on port 5000
+npm run build    # Build for production
+npm run preview  # Preview production build
 ```
 
-The Vite dev server is configured to:
-- Bind to `0.0.0.0:5000` for Replit compatibility
-- Allow all hosts for proxy support
-- Enable HMR with WebSocket configuration
-
-### Available Scripts
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-
 ## Deployment
-The project is configured for static deployment:
-- **Build Command**: `npm run build`
-- **Output Directory**: `dist/`
-- **Deployment Type**: Static site
-
-## Features
-- Hero section with gradient title
-- AI Agents showcase grid with 4 sample agents:
-  - Content Generator
-  - Code Assistant
-  - Data Analyzer
-  - Customer Support Bot
-- Interactive agent cards with hover effects
-- Modal popup for detailed agent information
-- Fully responsive design
-- Modern UI with gradient accents and glass-morphism effects
+- **Type**: Static site
+- **Build**: `npm run build`
+- **Output**: `dist/`
 
 ## Configuration Notes
-- Vite config includes `allowedHosts: true` to work with Replit's proxy system
-- HMR is configured for WebSocket tunneling through Replit
-- All environment requirements are handled through the Vite configuration
+- Vite configured with `allowedHosts: true` for Replit proxy
+- HMR uses WSS protocol for Replit tunneling
+- All demos work without API key (using mock responses)
 
 ## Recent Changes
-- **2024-12-05**: Initial project setup
-  - Created React + Vite portfolio website
-  - Configured for Replit environment (port 5000, host allowance)
-  - Implemented responsive AI agents showcase
-  - Set up deployment configuration for static hosting
+- **2024-12-05**: Complete rebuild
+  - Implemented "High-Finance Tech" design system
+  - Created 4 interactive AI demo micro-apps
+  - Added Gemini AI integration with fallbacks
+  - Built responsive layout with Framer Motion animations
+  - Set up static deployment configuration
 
 ## User Preferences
 None specified yet.
