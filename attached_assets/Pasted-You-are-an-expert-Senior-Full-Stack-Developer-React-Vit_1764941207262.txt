@@ -1,0 +1,138 @@
+You are an expert Senior Full-Stack Developer (React/Vite) and Award-Winning UI/UX Designer.
+
+Goal: Build a production-ready, high-performance portfolio website for an AI Automation Agency founded by Rushil CV and Dhanush Battu. The site must demonstrate technical competence through live interactive demos ("Micro-Apps") and convert high-ticket international clients (US/UK/Australia).
+
+Tech Stack:
+
+Frontend: React (Vite), Tailwind CSS.
+
+Animation: framer-motion (This is critical for the "stylish/extravaganza" feel).
+
+Icons: lucide-react.
+
+AI Engine: Google Gemini API (@google/generative-ai) for all text generation features.
+
+Utilities: jspdf (PDF generation), xlsx (Excel parsing).
+
+1. Design System (The "Architectural" Aesthetic)
+Concept: Do NOT use standard "Cyberpunk/Neon." The vibe is "High-Finance Tech"—authoritative, clean, and expensive.
+
+Color Palette:
+
+Canvas: Deep Obsidian (#0B0F19) to Slate (#1E293B).
+
+Primary Accent: Electric Lime (#D9F99D) used sparingly for buttons/active states.
+
+Typography: 'Space Grotesk' (Headers), 'Inter' (Body).
+
+Glassmorphism: Use heavy blur (backdrop-blur-xl) with white noise textures on cards to create depth.
+
+Animations:
+
+Scroll: Staggered reveal animations for every element.
+
+Hover: Cards should have a "Spotlight" effect (mouse-following radial gradient) or 3D tilt.
+
+Micro-interactions: Buttons scale on click; Links underline on hover.
+
+2. Core Features (The "Show, Don't Tell" Demos)
+A. The "Agency Brain" Chatbot (Global Widget)
+
+Function: A floating chat widget powered by Gemini.
+
+Persona: "Nexus Assistant" – Professional, concise, sales-oriented.
+
+Capabilities: Answers questions about services and attempts to book a meeting.
+
+Prompting: "You are the AI assistant for Rushil and Dhanush. Your goal is to explain how we save businesses money and get the user to book a call."
+
+B. The "Instant Invoice" Engine
+
+UI: Split screen (Input vs. Live Preview).
+
+Features:
+
+Manual Input: Form for Client details.
+
+Bulk Automation: Drag-and-drop .xlsx file upload support.
+
+Action: Button "Generate & Send" creates a PDF using jspdf, triggers a success animation, and simulates sending an email.
+
+C. The Content Multiplier (Gemini Powered)
+
+UI: Sleek input field.
+
+Logic: User inputs a 1-line draft. System calls Gemini API.
+
+Output: Generates 3 unique variations:
+
+LinkedIn: Professional & detailed.
+
+Instagram: Casual + Image suggestion.
+
+Facebook: Community-focused.
+
+Feature: "One-Click Copy" button for each.
+
+D. The Document Data Extractor
+
+UI: A "Scanner" visual interface.
+
+Logic: Simulates uploading a PDF invoice/resume.
+
+Animation: A laser scanning line moves down the file icon.
+
+Result: Extracts unstructured data into a clean React Table (mock the extraction if real OCR is too heavy, but make the UX feel real).
+
+3. The "Founders" Section (New Requirement)
+Title: "The Architects."
+
+Layout: A side-by-side card layout (or high-end grid).
+
+Card Design:
+
+Photo: Circular cropped (rounded-full), high-resolution placeholder (I will replace src later). Add a glowing ring border (border-lime-400) that pulses slightly on hover.
+
+Glass Effect: The card background should be semi-transparent dark glass.
+
+Content:
+
+Profile 1:
+
+Name: Rushil CV
+
+Role: Lead AI Architect
+
+Links: LinkedIn (linkedin.com/in/rushilcv) | Email (rushil.cv26@gmail.com)
+
+Profile 2:
+
+Name: Dhanush Battu
+
+Role: Head of Operations & Strategy
+
+Links: LinkedIn (linkedin.com/in/dhanushbattu) | Email (dhanushbattu123@gmail.com)
+
+Interactivity: When hovering over the social icons, they should scale up and change color to the Accent Lime.
+
+4. Page Structure & Flow
+Hero: "Automating the Future." Heavy emphasis on motion/3D abstract visuals.
+
+Trust Bar: "Tech Stack" Marquee (Python, Gemini, React, Stripe).
+
+The Playground: The 4 Demos (Invoice, Chat, Content, Extractor) stacked with sticky headers.
+
+The Architects: The Team section described above.
+
+Footer: Simple links + "Book Strategy Call."
+
+5. Implementation Instructions for Agent
+Setup: Initialize React + Vite + Tailwind. Install framer-motion, lucide-react, jspdf, xlsx, @google/generative-ai.
+
+Secrets: Configure code to look for GEMINI_API_KEY in environment variables. Use a fallback mock response if the key is missing so the UI can still be previewed.
+
+Images: Use https://via.placeholder.com/150 for the team avatars initially, but code the img tags clearly so I can swap the URLs easily.
+
+Responsiveness: Ensure the "Playground" stacks vertically on mobile but uses a grid on Desktop.
+
+Action: Generate the full codebase structure, starting with the App.jsx, tailwind.config.js (for the custom colors), and the TeamSection.jsx component.

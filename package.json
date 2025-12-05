@@ -8,13 +8,24 @@
     "build": "vite build",
     "preview": "vite preview"
   },
-  "keywords": ["ai", "portfolio", "agents"],
+  "keywords": [
+    "ai",
+    "portfolio",
+    "agents"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@google/genai": "^1.31.0",
+    "@tailwindcss/vite": "^4.1.17",
     "@vitejs/plugin-react": "^5.1.1",
+    "framer-motion": "^12.23.25",
+    "jspdf": "^3.0.4",
+    "lucide-react": "^0.555.0",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
-    "vite": "^7.2.6"
+    "tailwindcss": "^4.1.17",
+    "vite": "^7.2.6",
+    "xlsx": "^0.18.5"
   }
 }
