@@ -1,12 +1,14 @@
 {
-  "name": "workspace",
+  "name": "ai-agents-portfolio",
   "version": "1.0.0",
-  "description": "1. portfolio website showcases all the woking ai agents build and the clients can use them live.",
-  "main": "index.js",
+  "type": "module",
+  "description": "Portfolio website showcasing working AI agents that clients can use live",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
-  "keywords": [],
+  "keywords": ["ai", "portfolio", "agents"],
   "author": "",
   "license": "ISC",
   "dependencies": {
