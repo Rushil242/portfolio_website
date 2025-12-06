@@ -1,70 +1,23 @@
-import { motion } from 'framer-motion'
-import Hero from './components/Hero'
-import TrustBar from './components/TrustBar'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Navigation from './components/Navigation'
 import Chatbot from './components/Chatbot'
-import InvoiceEngine from './components/InvoiceEngine'
-import ContentMultiplier from './components/ContentMultiplier'
-import DataExtractor from './components/DataExtractor'
-import TeamSection from './components/TeamSection'
-import Footer from './components/Footer'
-
-function PlaygroundSection({ children }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-100px' }}
-      transition={{ duration: 0.6 }}
-    >
-      {children}
-    </motion.div>
-  )
-}
+import HomePage from './pages/HomePage'
+import InvoicePage from './pages/InvoicePage'
+import ContentPage from './pages/ContentPage'
+import ExtractorPage from './pages/ExtractorPage'
 
 function App() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-obsidian to-slate">
-      <Hero />
-      <TrustBar />
-      
-      <section id="playground" className="py-20">
-        <div className="max-w-6xl mx-auto px-6">
-          <motion.div
-            className="text-center mb-20"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 className="font-grotesk text-4xl md:text-5xl font-bold text-white mb-4">
-              The <span className="text-gradient">Playground</span>
-            </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              Don't take our word for it—try our AI tools yourself. 
-              These are live demos of systems we build for clients.
-            </p>
-          </motion.div>
-          
-          <div className="space-y-12">
-            <PlaygroundSection>
-              <InvoiceEngine />
-            </PlaygroundSection>
-            
-            <PlaygroundSection>
-              <ContentMultiplier />
-            </PlaygroundSection>
-            
-            <PlaygroundSection>
-              <DataExtractor />
-            </PlaygroundSection>
-          </div>
-        </div>
-      </section>
-      
-      <TeamSection />
-      <Footer />
+    <BrowserRouter>
+      <Navigation />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/demos/invoice" element={<InvoicePage />} />
+        <Route path="/demos/content" element={<ContentPage />} />
+        <Route path="/demos/extractor" element={<ExtractorPage />} />
+      </Routes>
       <Chatbot />
-    </div>
+    </BrowserRouter>
   )
 }
 

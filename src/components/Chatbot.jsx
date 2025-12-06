@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MessageCircle, X, Send, Bot, User } from 'lucide-react'
+import { useLocation } from 'react-router-dom'
 import { GoogleGenAI } from '@google/genai'
 
 const SYSTEM_PROMPT = `You are Nexus Assistant, the AI concierge for Rushil and Dhanush's AI Automation Agency. 
@@ -12,6 +13,7 @@ Your goals:
 Keep responses brief (2-3 sentences max). Always end with a soft call-to-action when appropriate.`
 
 export default function Chatbot() {
+  const location = useLocation()
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState([
     { role: 'assistant', content: "Hello! I'm Nexus, your AI assistant. How can I help you explore our automation solutions today?" }
@@ -21,11 +23,13 @@ export default function Chatbot() {
   const messagesEndRef = useRef(null)
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsOpen(true)
-    }, 2500)
-    return () => clearTimeout(timer)
-  }, [])
+    if (location.pathname === '/') {
+      const timer = setTimeout(() => {
+        setIsOpen(true)
+      }, 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [location.pathname])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -108,16 +112,16 @@ export default function Chatbot() {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-24 right-6 z-50 w-[380px] max-w-[calc(100vw-3rem)] bg-obsidian rounded-2xl overflow-hidden shadow-2xl"
-            style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8)' }}
+            className="fixed bottom-24 right-6 z-50 w-[380px] max-w-[calc(100vw-3rem)] bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border border-slate-700"
+            style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.9)' }}
           >
-            <div className="bg-obsidian p-4 flex items-center justify-between">
+            <div className="bg-slate-900 p-4 flex items-center justify-between border-b border-slate-700">
               <div className="flex items-center gap-3">
                 <div className="relative">
-                  <div className="w-10 h-10 rounded-full bg-slate flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center">
                     <Bot className="w-5 h-5 text-lime-accent" />
                   </div>
-                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-lime-accent rounded-full border-2 border-obsidian" />
+                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-lime-accent rounded-full border-2 border-slate-900" />
                 </div>
                 <div>
                   <h3 className="font-grotesk font-semibold text-white text-sm">Nexus Assistant</h3>
@@ -126,13 +130,13 @@ export default function Chatbot() {
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="w-8 h-8 rounded-full bg-slate/50 flex items-center justify-center text-gray-400 hover:text-white hover:bg-slate transition-all"
+                className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-slate-700 transition-all"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="h-80 overflow-y-auto p-4 space-y-4 bg-slate/30">
+            <div className="h-80 overflow-y-auto p-4 space-y-4 bg-slate-800">
               {messages.map((message, index) => (
                 <motion.div
                   key={index}
@@ -141,17 +145,17 @@ export default function Chatbot() {
                   className={`flex gap-3 ${message.role === 'user' ? 'flex-row-reverse' : ''}`}
                 >
                   <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    message.role === 'user' ? 'bg-gray-600' : 'bg-slate'
+                    message.role === 'user' ? 'bg-slate-700' : 'bg-slate-900'
                   }`}>
-                    {message.role === 'user' ? 
-                      <User className="w-3.5 h-3.5 text-gray-300" /> : 
+                    {message.role === 'user' ?
+                      <User className="w-3.5 h-3.5 text-gray-300" /> :
                       <Bot className="w-3.5 h-3.5 text-lime-accent" />
                     }
                   </div>
                   <div className={`max-w-[75%] px-4 py-3 ${
-                    message.role === 'user' 
-                      ? 'bg-gray-700 text-white rounded-2xl rounded-br-sm' 
-                      : 'bg-obsidian text-gray-100 rounded-2xl rounded-bl-sm'
+                    message.role === 'user'
+                      ? 'bg-slate-700 text-white rounded-2xl rounded-br-sm'
+                      : 'bg-slate-900 text-gray-100 rounded-2xl rounded-bl-sm'
                   }`}>
                     <p className="text-sm leading-relaxed">{message.content}</p>
                   </div>
@@ -163,10 +167,10 @@ export default function Chatbot() {
                   animate={{ opacity: 1 }}
                   className="flex gap-3"
                 >
-                  <div className="w-7 h-7 rounded-full bg-slate flex items-center justify-center">
+                  <div className="w-7 h-7 rounded-full bg-slate-900 flex items-center justify-center">
                     <Bot className="w-3.5 h-3.5 text-lime-accent" />
                   </div>
-                  <div className="bg-obsidian px-4 py-3 rounded-2xl rounded-bl-sm">
+                  <div className="bg-slate-900 px-4 py-3 rounded-2xl rounded-bl-sm">
                     <div className="flex gap-1.5">
                       {[0, 1, 2].map(i => (
                         <motion.div
@@ -183,7 +187,7 @@ export default function Chatbot() {
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="p-4 bg-obsidian">
+            <div className="p-4 bg-slate-900 border-t border-slate-700">
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -191,7 +195,7 @@ export default function Chatbot() {
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
                   placeholder="Type your message..."
-                  className="flex-1 bg-slate border-0 rounded-full px-5 py-3 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-lime-accent/30"
+                  className="flex-1 bg-slate-800 border border-slate-700 rounded-full px-5 py-3 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-lime-accent transition-colors"
                 />
                 <motion.button
                   onClick={sendMessage}
