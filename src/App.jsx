@@ -8,7 +8,7 @@ import DataExtractor from './components/DataExtractor'
 import TeamSection from './components/TeamSection'
 import Footer from './components/Footer'
 
-function PlaygroundSection({ title, children }) {
+function PlaygroundSection({ children }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
@@ -27,10 +27,10 @@ function App() {
       <Hero />
       <TrustBar />
       
-      <section id="playground" className="py-24">
+      <section id="playground" className="py-20">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
-            className="text-center mb-16"
+            className="text-center mb-20"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}

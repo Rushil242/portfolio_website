@@ -14,11 +14,18 @@ Keep responses brief (2-3 sentences max). Always end with a soft call-to-action 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: "Hello! I'm Nexus, your AI assistant. How can I help you learn about our automation solutions today?" }
+    { role: 'assistant', content: "Hello! I'm Nexus, your AI assistant. How can I help you explore our automation solutions today?" }
   ])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef(null)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsOpen(true)
+    }, 2500)
+    return () => clearTimeout(timer)
+  }, [])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -85,17 +92,12 @@ export default function Chatbot() {
     <>
       <motion.button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-50 p-4 bg-lime-accent text-obsidian rounded-full shadow-lg"
+        className="fixed bottom-6 right-6 z-50 p-4 bg-lime-accent text-obsidian rounded-full shadow-2xl"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        animate={{
-          boxShadow: [
-            '0 0 20px rgba(217, 249, 157, 0.3)',
-            '0 0 40px rgba(217, 249, 157, 0.5)',
-            '0 0 20px rgba(217, 249, 157, 0.3)',
-          ],
-        }}
-        transition={{ duration: 2, repeat: Infinity }}
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ delay: 0.5 }}
       >
         <MessageCircle className="w-6 h-6" />
       </motion.button>
@@ -106,27 +108,31 @@ export default function Chatbot() {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-24 right-6 z-50 w-[380px] max-w-[calc(100vw-3rem)] glass-card rounded-2xl overflow-hidden shadow-2xl"
+            className="fixed bottom-24 right-6 z-50 w-[380px] max-w-[calc(100vw-3rem)] bg-obsidian rounded-2xl overflow-hidden shadow-2xl"
+            style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8)' }}
           >
-            <div className="bg-gradient-to-r from-lime-accent/20 to-lime-500/20 p-4 flex items-center justify-between border-b border-white/10">
+            <div className="bg-obsidian p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-lime-accent/20 flex items-center justify-center">
-                  <Bot className="w-5 h-5 text-lime-accent" />
+                <div className="relative">
+                  <div className="w-10 h-10 rounded-full bg-slate flex items-center justify-center">
+                    <Bot className="w-5 h-5 text-lime-accent" />
+                  </div>
+                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-lime-accent rounded-full border-2 border-obsidian" />
                 </div>
                 <div>
-                  <h3 className="font-grotesk font-semibold text-white">Nexus Assistant</h3>
-                  <p className="text-xs text-gray-400">AI-Powered Support</p>
+                  <h3 className="font-grotesk font-semibold text-white text-sm">Nexus Assistant</h3>
+                  <p className="text-xs text-lime-accent">Online</p>
                 </div>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-gray-400 hover:text-white transition-colors"
+                className="w-8 h-8 rounded-full bg-slate/50 flex items-center justify-center text-gray-400 hover:text-white hover:bg-slate transition-all"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="h-80 overflow-y-auto p-4 space-y-4">
+            <div className="h-80 overflow-y-auto p-4 space-y-4 bg-slate/30">
               {messages.map((message, index) => (
                 <motion.div
                   key={index}
@@ -134,20 +140,20 @@ export default function Chatbot() {
                   animate={{ opacity: 1, y: 0 }}
                   className={`flex gap-3 ${message.role === 'user' ? 'flex-row-reverse' : ''}`}
                 >
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    message.role === 'user' ? 'bg-slate' : 'bg-lime-accent/20'
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 ${
+                    message.role === 'user' ? 'bg-gray-600' : 'bg-slate'
                   }`}>
                     {message.role === 'user' ? 
-                      <User className="w-4 h-4 text-gray-300" /> : 
-                      <Bot className="w-4 h-4 text-lime-accent" />
+                      <User className="w-3.5 h-3.5 text-gray-300" /> : 
+                      <Bot className="w-3.5 h-3.5 text-lime-accent" />
                     }
                   </div>
-                  <div className={`max-w-[80%] p-3 rounded-2xl ${
+                  <div className={`max-w-[75%] px-4 py-3 ${
                     message.role === 'user' 
-                      ? 'bg-lime-accent text-obsidian rounded-br-md' 
-                      : 'bg-slate/50 text-gray-200 rounded-bl-md'
+                      ? 'bg-gray-700 text-white rounded-2xl rounded-br-sm' 
+                      : 'bg-obsidian text-gray-100 rounded-2xl rounded-bl-sm'
                   }`}>
-                    <p className="text-sm">{message.content}</p>
+                    <p className="text-sm leading-relaxed">{message.content}</p>
                   </div>
                 </motion.div>
               ))}
@@ -157,16 +163,16 @@ export default function Chatbot() {
                   animate={{ opacity: 1 }}
                   className="flex gap-3"
                 >
-                  <div className="w-8 h-8 rounded-full bg-lime-accent/20 flex items-center justify-center">
-                    <Bot className="w-4 h-4 text-lime-accent" />
+                  <div className="w-7 h-7 rounded-full bg-slate flex items-center justify-center">
+                    <Bot className="w-3.5 h-3.5 text-lime-accent" />
                   </div>
-                  <div className="bg-slate/50 p-3 rounded-2xl rounded-bl-md">
-                    <div className="flex gap-1">
+                  <div className="bg-obsidian px-4 py-3 rounded-2xl rounded-bl-sm">
+                    <div className="flex gap-1.5">
                       {[0, 1, 2].map(i => (
                         <motion.div
                           key={i}
-                          className="w-2 h-2 bg-lime-accent rounded-full"
-                          animate={{ y: [0, -5, 0] }}
+                          className="w-2 h-2 bg-lime-accent/60 rounded-full"
+                          animate={{ y: [0, -4, 0] }}
                           transition={{ duration: 0.5, repeat: Infinity, delay: i * 0.1 }}
                         />
                       ))}
@@ -177,24 +183,24 @@ export default function Chatbot() {
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="p-4 border-t border-white/10">
+            <div className="p-4 bg-obsidian">
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                  placeholder="Ask about our services..."
-                  className="flex-1 bg-slate/50 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-lime-accent/50"
+                  placeholder="Type your message..."
+                  className="flex-1 bg-slate border-0 rounded-full px-5 py-3 text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-lime-accent/30"
                 />
                 <motion.button
                   onClick={sendMessage}
                   disabled={isLoading}
-                  className="p-3 bg-lime-accent text-obsidian rounded-xl disabled:opacity-50"
+                  className="w-11 h-11 bg-lime-accent text-obsidian rounded-full flex items-center justify-center disabled:opacity-50"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <Send className="w-5 h-5" />
+                  <Send className="w-4 h-4" />
                 </motion.button>
               </div>
             </div>
