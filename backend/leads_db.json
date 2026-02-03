@@ -1,0 +1,19 @@
+[
+  {
+    "budget": "$5000",
+    "location": "Downtown Manhattan",
+    "timeline": "next week",
+    "lead_score": 90,
+    "status": "Hot",
+    "summary": "The lead has a high budget, an urgent move-in timeline, and a specific location preference, though no contact information was shared."
+  },
+  {
+    "budget": "$5000",
+    "location": "Downtown Manhattan",
+    "timeline": "next week",
+    "lead_score": 95,
+    "status": "Qualified",
+    "summary": "Lead is seeking a property in Downtown Manhattan with a budget of $5000. They have an extremely urgent timeline, needing to move within a week, and have provided a valid contact number.",
+    "contact_number": "+91 8008527903"
+  }
+]

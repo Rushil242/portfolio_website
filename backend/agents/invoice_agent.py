@@ -13,7 +13,7 @@ genai.configure(api_key=api_key)
 # 3. Define the Model (Using Flash for speed & cost)
 # We force the model to output JSON, which is critical for software.
 model = genai.GenerativeModel(
-    'gemini-1.5-flash',
+    'gemini-3-flash-preview',
     generation_config={"response_mime_type": "application/json"}
 )
 
