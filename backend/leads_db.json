@@ -15,5 +15,23 @@
     "status": "Qualified",
     "summary": "Lead is seeking a property in Downtown Manhattan with a budget of $5000. They have an extremely urgent timeline, needing to move within a week, and have provided a valid contact number.",
     "contact_number": "+91 8008527903"
+  },
+  {
+    "budget": "20000 rupees",
+    "location": "bengaluru",
+    "timeline": "next month",
+    "lead_score": 95,
+    "status": "qualified",
+    "summary": "The user is looking for a rental property in Bengaluru with a budget of 20,000 rupees per month and plans to move in next month. All contact details have been provided.",
+    "contact_number": "8558888552"
+  },
+  {
+    "budget": "200000",
+    "location": "new york",
+    "timeline": "in 2 days",
+    "lead_score": 95,
+    "status": "qualified",
+    "summary": "Lead is highly urgent with a move-in timeline of 2 days and a substantial budget of 200,000 for the New York area. Contact details were provided and verified.",
+    "contact_number": "7899988748"
   }
 ]
