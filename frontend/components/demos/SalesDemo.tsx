@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Send, User, Bot, CheckCircle, Sparkles } from "lucide-react"; // Icons
+import { Send, Bot, RefreshCw, Trophy } from "lucide-react"; 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -12,14 +12,37 @@ type Message = {
   content: string;
 };
 
+type Lead = {
+  lead_score: number;
+  budget: string;
+  location: string;
+  status: string;
+  summary: string;
+};
+
 export default function SalesDemo() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [leadData, setLeadData] = useState<any | null>(null); // To store the "captured" lead
+  const [leads, setLeads] = useState<Lead[]>([]); // Store the full list
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom of chat
+  // 1. Fetch the leads when the component loads
+  useEffect(() => {
+    fetchLeads();
+  }, []);
+
+  const fetchLeads = async () => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/leads`);
+      const data = await res.json();
+      setLeads(data);
+    } catch (error) {
+      console.error("Failed to fetch leads");
+    }
+  };
+
+  // Auto-scroll chat
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -33,24 +56,21 @@ export default function SalesDemo() {
     setLoading(true);
 
     try {
-      // Send the WHOLE history to the backend
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/agent/sales`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          history: [...messages, userMsg], // Send previous + new message
+          history: [...messages, userMsg], 
           message: userMsg.content,
         }),
       });
 
       const data = await res.json();
-      
-      // Add Bot Reply
       setMessages((prev) => [...prev, { role: "assistant", content: data.response }]);
 
-      // DID WE CAPTURE A LEAD?
+      // 2. IF LEAD CAPTURED: Refresh the table instantly
       if (data.lead_captured) {
-        setLeadData(data.data); // Update the CRM panel on the right
+        await fetchLeads(); // This pulls the new sorted list
       }
 
     } catch (error) {
@@ -61,12 +81,10 @@ export default function SalesDemo() {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[500px]">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[600px]">
       
-      {/* LEFT: CHAT INTERFACE (Span 2 columns) */}
+      {/* LEFT: CHATBOT (Same as before) */}
       <Card className="md:col-span-2 flex flex-col overflow-hidden border-gray-200 shadow-sm bg-white">
-        
-        {/* Chat Header */}
         <div className="p-4 border-b border-gray-100 bg-gray-50 flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
                 <Bot className="w-6 h-6 text-blue-600" />
@@ -80,7 +98,6 @@ export default function SalesDemo() {
             </div>
         </div>
 
-        {/* Chat Messages Area */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50/30">
             {messages.length === 0 && (
                 <div className="text-center text-gray-400 mt-10">
@@ -114,12 +131,8 @@ export default function SalesDemo() {
             <div ref={messagesEndRef} />
         </div>
 
-        {/* Input Area */}
         <div className="p-4 border-t border-gray-100 bg-white">
-            <form 
-                onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
-                className="flex gap-2"
-            >
+            <form onSubmit={(e) => { e.preventDefault(); sendMessage(); }} className="flex gap-2">
                 <Input 
                     value={input} 
                     onChange={(e) => setInput(e.target.value)}
@@ -133,57 +146,72 @@ export default function SalesDemo() {
         </div>
       </Card>
 
-      {/* RIGHT: LIVE CRM (Span 1 column) */}
-      <Card className="md:col-span-1 bg-gray-900 text-white border-none shadow-xl flex flex-col relative overflow-hidden">
-        {/* Background decorative blob */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500 blur-[60px] opacity-20 pointer-events-none" />
-
-        <div className="p-4 border-b border-gray-800">
-            <h3 className="font-mono text-sm text-gray-400 uppercase tracking-widest">Live CRM Feed</h3>
+      {/* RIGHT: LIVE RANKED SPREADSHEET (The New View) */}
+      <Card className="md:col-span-1 border-gray-200 shadow-md flex flex-col overflow-hidden bg-white">
+        {/* Table Header */}
+        <div className="p-4 bg-gray-800 text-white flex justify-between items-center">
+            <h3 className="font-semibold text-sm flex items-center gap-2">
+                <Trophy className="w-4 h-4 text-yellow-400"/> Live Lead Ranking
+            </h3>
+            <span className="text-xs bg-gray-700 px-2 py-1 rounded text-gray-300">HubSpot Sync</span>
         </div>
 
-        <div className="flex-1 p-6 flex items-center justify-center">
-            {!leadData ? (
-                <div className="text-center opacity-40 space-y-3">
-                    <div className="w-16 h-16 rounded-full border-2 border-dashed border-gray-600 mx-auto flex items-center justify-center">
-                        <User className="w-8 h-8" />
-                    </div>
-                    <p className="text-sm font-mono">Waiting for qualified lead...</p>
-                </div>
-            ) : (
-                <motion.div 
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    className="w-full space-y-6"
-                >
-                    <div className="text-center">
-                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-500/20 text-green-400 mb-3 ring-1 ring-green-500/50">
-                            <Sparkles className="w-8 h-8" />
-                        </div>
-                        <h2 className="text-2xl font-bold text-white">Lead Captured!</h2>
-                        <p className="text-green-400 text-sm font-medium">Synced to HubSpot</p>
-                    </div>
+        {/* Table Header Row */}
+        <div className="grid grid-cols-4 gap-2 p-3 bg-gray-100 border-b border-gray-200 text-xs font-bold text-gray-500 uppercase">
+            <div className="col-span-1 text-center">Score</div>
+            <div className="col-span-3">Details</div>
+        </div>
 
-                    <div className="space-y-3 bg-gray-800/50 p-4 rounded-lg border border-gray-700">
-                        <div className="flex justify-between border-b border-gray-700 pb-2">
-                            <span className="text-gray-400 text-xs uppercase">Score</span>
-                            <span className="font-bold text-yellow-400 text-xl">{leadData.lead_score}/100</span>
+        {/* Lead List */}
+        <div className="flex-1 overflow-y-auto bg-gray-50">
+            <AnimatePresence>
+                {leads.map((lead, i) => (
+                    <motion.div 
+                        key={i}
+                        layout // Enables smooth sorting animation
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className={`grid grid-cols-4 gap-2 p-3 border-b border-gray-100 bg-white hover:bg-blue-50 transition-colors ${i === 0 ? "bg-yellow-50/50" : ""}`}
+                    >
+                        {/* Score Column */}
+                        <div className="col-span-1 flex flex-col items-center justify-center">
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border-2 ${
+                                lead.lead_score >= 80 ? "border-green-500 text-green-700 bg-green-50" : 
+                                lead.lead_score >= 50 ? "border-yellow-500 text-yellow-700 bg-yellow-50" : 
+                                "border-gray-300 text-gray-500"
+                            }`}>
+                                {lead.lead_score}
+                            </div>
                         </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-400 text-sm">Budget</span>
-                            <span className="font-medium">{leadData.budget || "N/A"}</span>
+
+                        {/* Details Column */}
+                        <div className="col-span-3 flex flex-col justify-center">
+                            <div className="flex justify-between items-start">
+                                <span className="font-bold text-sm text-gray-800 truncate">{lead.location || "Unknown"}</span>
+                                <span className="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">{lead.status}</span>
+                            </div>
+                            <div className="text-xs text-gray-500 mt-1">
+                                Budget: {lead.budget || "N/A"}
+                            </div>
+                            <div className="text-[10px] text-gray-400 mt-1 line-clamp-1 italic">
+                                "{lead.summary}"
+                            </div>
                         </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-400 text-sm">Location</span>
-                            <span className="font-medium text-right max-w-[120px] truncate">{leadData.location || "N/A"}</span>
-                        </div>
-                        <div className="pt-2">
-                            <span className="block text-gray-400 text-xs uppercase mb-1">AI Analysis</span>
-                            <p className="text-xs text-gray-300 italic">"{leadData.summary}"</p>
-                        </div>
-                    </div>
-                </motion.div>
+                    </motion.div>
+                ))}
+            </AnimatePresence>
+            
+            {leads.length === 0 && (
+                <div className="p-8 text-center text-gray-400 text-sm">
+                    No leads yet. Start chatting to populate the CRM.
+                </div>
             )}
+        </div>
+        
+        {/* Footer */}
+        <div className="p-2 bg-gray-100 text-center text-[10px] text-gray-400">
+            <RefreshCw className="w-3 h-3 inline mr-1 animate-spin-slow"/> 
+            Auto-sorting by priority...
         </div>
       </Card>
     </div>
