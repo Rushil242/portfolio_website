@@ -1,65 +1,73 @@
-import os
-import google.generativeai as genai
-from dotenv import load_dotenv
-from pypdf import PdfReader
 import io
+import re
+from collections import Counter
+from typing import List
 
-# 1. Load Keys
-load_dotenv()
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+try:
+    from pypdf import PdfReader
+except ImportError:  # pragma: no cover
+    PdfReader = None
 
-# 2. Configure Model
-# We don't force JSON here because we want a natural conversation.
-model = genai.GenerativeModel('gemini-3-flash-preview')
 
-def extract_text_from_pdf(file_bytes):
-    """
-    Helper function to read text from uploaded PDF bytes.
-    """
+STOP_WORDS = {
+    "the", "a", "an", "and", "or", "to", "of", "in", "on", "for", "with", "is", "are", "was", "were",
+    "this", "that", "it", "as", "at", "by", "from", "be", "what", "how", "when", "where", "who", "why",
+}
+
+
+def extract_text_from_pdf(file_bytes: bytes) -> str:
+    if PdfReader is None:
+        return "Error reading PDF: pypdf is not installed"
+
     try:
-        # Create a file-like object from the bytes
         pdf_stream = io.BytesIO(file_bytes)
         reader = PdfReader(pdf_stream)
-        text = ""
+        pages: List[str] = []
         for page in reader.pages:
-            text += page.extract_text() + "\n"
-        return text
-    except Exception as e:
-        return f"Error reading PDF: {str(e)}"
+            pages.append(page.extract_text() or "")
+        return "\n".join(pages).strip()
+    except Exception as exc:
+        return f"Error reading PDF: {exc}"
 
-def answer_sop_question(file_bytes, question):
-    """
-    Reads the PDF and answers the user's question based ONLY on that content.
-    """
-    # 1. Get text from the PDF
+
+def _tokenize(text: str) -> List[str]:
+    return [w for w in re.findall(r"[a-zA-Z0-9']+", text.lower()) if w not in STOP_WORDS and len(w) > 2]
+
+
+def _best_matching_chunks(document_text: str, question: str, limit: int = 3) -> List[str]:
+    question_tokens = _tokenize(question)
+    if not question_tokens:
+        return []
+
+    q_counts = Counter(question_tokens)
+    chunks = [c.strip() for c in re.split(r"\n\s*\n|(?<=[.!?])\s+", document_text) if c.strip()]
+
+    scored = []
+    for chunk in chunks:
+        chunk_tokens = Counter(_tokenize(chunk))
+        overlap = sum(min(chunk_tokens[token], count) for token, count in q_counts.items())
+        if overlap > 0:
+            scored.append((overlap, chunk))
+
+    scored.sort(key=lambda x: x[0], reverse=True)
+    return [chunk for _, chunk in scored[:limit]]
+
+
+def answer_sop_question(file_bytes: bytes, question: str):
     pdf_text = extract_text_from_pdf(file_bytes)
-    
-    # 2. Limit text if it's too huge (Safety mechanism)
-    # Gemini Flash handles ~700,000 words easily, but let's be safe.
-    if len(pdf_text) > 500000:
-        pdf_text = pdf_text[:500000]
 
-    # 3. The "Grounding" Prompt
-    # This instructs the AI to ONLY use the provided text.
-    prompt = f"""
-    You are an expert technical support agent. 
-    You have been given the following Reference Document (SOP):
-    
-    <DOCUMENT_START>
-    {pdf_text}
-    <DOCUMENT_END>
+    if pdf_text.startswith("Error reading PDF"):
+        return {"error": pdf_text}
 
-    USER QUESTION: {question}
+    if not pdf_text:
+        return {"answer": "I cannot find that information in the provided document."}
 
-    INSTRUCTIONS:
-    1. Answer the question using ONLY the information in the Reference Document.
-    2. If the answer is not in the document, say "I cannot find that information in the provided document."
-    3. Quote specific sections if possible.
-    4. Keep the tone professional and concise.
-    """
+    matches = _best_matching_chunks(pdf_text, question)
+    if not matches:
+        return {"answer": "I cannot find that information in the provided document."}
 
-    try:
-        response = model.generate_content(prompt)
-        return {"answer": response.text}
-    except Exception as e:
-        return {"error": str(e)}
+    answer = "\n\n".join(matches)
+    return {
+        "answer": f"Based on the document:\n\n{answer}",
+        "citations": matches,
+    }

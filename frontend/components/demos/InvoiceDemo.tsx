@@ -9,7 +9,8 @@ import { motion } from "framer-motion";
 export default function InvoiceDemo() {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any | null>(null);
+  type InvoiceResult = { vendor_name?: string; total_amount?: number; date?: string; tax_amount?: number; warning?: string };
+  const [result, setResult] = useState<InvoiceResult | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {

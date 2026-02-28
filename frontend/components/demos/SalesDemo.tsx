@@ -37,7 +37,7 @@ export default function SalesDemo() {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/leads`);
       const data = await res.json();
       setLeads(data);
-    } catch (error) {
+    } catch {
       console.error("Failed to fetch leads");
     }
   };
@@ -101,7 +101,7 @@ export default function SalesDemo() {
         <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50/30">
             {messages.length === 0 && (
                 <div className="text-center text-gray-400 mt-10">
-                    <p>Say "Hi" to start qualifying...</p>
+                    <p>Say &quot;Hi&quot; to start qualifying...</p>
                 </div>
             )}
             
@@ -194,7 +194,7 @@ export default function SalesDemo() {
                                 Budget: {lead.budget || "N/A"}
                             </div>
                             <div className="text-[10px] text-gray-400 mt-1 line-clamp-1 italic">
-                                "{lead.summary}"
+                                &quot;{lead.summary}&quot;
                             </div>
                         </div>
                     </motion.div>
