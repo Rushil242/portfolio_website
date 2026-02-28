@@ -1,47 +1,77 @@
-import os
-import google.generativeai as genai
-from dotenv import load_dotenv
-from pypdf import PdfReader
-import io
+import re
+from typing import Dict, Optional
 
-# 1. Load Keys
-load_dotenv()
-genai.configure(api_key=os.getenv("GEMINI_API_KEY_2"))
+from agents.llm_client import generate_json
 
-# 2. Configure Model
-model = genai.GenerativeModel('gemini-3-flash-preview')
+POSITIVE_WORDS = {
+    "great", "excellent", "amazing", "friendly", "best", "love", "perfect", "quick", "awesome", "delicious",
+}
+NEGATIVE_WORDS = {
+    "bad", "terrible", "awful", "slow", "rude", "cold", "late", "worst", "never", "dirty", "disappointed",
+}
 
-def generate_review_response(review_text, business_name="Our Company"):
-    """
-    Analyzes a customer review and drafts a professional response.
-    """
-    
+
+def _sentiment(review_text: str) -> str:
+    tokens = re.findall(r"[a-zA-Z']+", review_text.lower())
+    pos = sum(1 for token in tokens if token in POSITIVE_WORDS)
+    neg = sum(1 for token in tokens if token in NEGATIVE_WORDS)
+
+    if neg > pos:
+        return "Negative"
+    if pos > neg:
+        return "Positive"
+    return "Neutral"
+
+
+def _llm_review_response(review_text: str, business_name: str) -> Optional[Dict[str, str]]:
     prompt = f"""
-    You are a Senior Public Relations Manager for {business_name}. 
-    Your job is to write a reply to the following customer review.
+You are a customer support response writer for {business_name}.
+Return strict JSON with keys:
+- sentiment: one of Positive, Negative, Neutral
+- response: public reply text
+Rules:
+- If negative: empathetic, non-defensive, offer support via email support@{business_name.lower().replace(' ', '')}.com and sign with Customer Success Team.
+- If positive: thank warmly, mention what they liked, invite them back.
+- If neutral: thank and acknowledge feedback.
+Customer review:
+{review_text}
+"""
+    data = generate_json(prompt)
+    if not data:
+        return None
 
-    CUSTOMER REVIEW:
-    "{review_text}"
+    sentiment = data.get("sentiment")
+    response = data.get("response")
+    if sentiment in {"Positive", "Negative", "Neutral"} and isinstance(response, str) and response.strip():
+        return {"sentiment": sentiment, "response": response.strip()}
+    return None
 
-    INSTRUCTIONS:
-    1. Analyze the sentiment (Positive, Negative, or Neutral).
-    2. IF NEGATIVE:
-       - Be empathetic and professional. 
-       - Do NOT get defensive.
-       - Acknowledge their specific complaint.
-       - Offer a solution (e.g., "Please email us at support@{business_name.lower().replace(' ', '')}.com so we can fix this").
-       - Sign off as "Customer Success Team".
-    
-    3. IF POSITIVE:
-       - Thank them enthusiastically.
-       - Mention the specific thing they liked.
-       - Invite them back soon.
 
-    4. Output ONLY the response text. Do not add quotes or "Here is the draft".
-    """
+def generate_review_response(review_text: str, business_name: str = "Our Company") -> Dict[str, str]:
+    llm_result = _llm_review_response(review_text, business_name)
+    if llm_result:
+        llm_result["source"] = "gemini"
+        return llm_result
 
-    try:
-        response = model.generate_content(prompt)
-        return {"response": response.text}
-    except Exception as e:
-        return {"error": str(e)}
+    sentiment = _sentiment(review_text)
+    support_email = f"support@{business_name.lower().replace(' ', '')}.com"
+
+    if sentiment == "Negative":
+        response = (
+            f"Thank you for sharing your feedback. We're truly sorry your recent experience with {business_name} "
+            "did not meet expectations. We understand how frustrating that must have felt, and we want to make it right. "
+            f"Please email us at {support_email} with your visit details so we can resolve this quickly.\n\n"
+            "Customer Success Team"
+        )
+    elif sentiment == "Positive":
+        response = (
+            f"Thank you so much for the wonderful review! We're thrilled to hear you had a great experience with {business_name}. "
+            "Your feedback means a lot to our team, and we can't wait to welcome you back again soon."
+        )
+    else:
+        response = (
+            f"Thank you for taking the time to share your feedback about {business_name}. "
+            "We appreciate hearing from our customers and are always working to improve your experience."
+        )
+
+    return {"response": response, "sentiment": sentiment, "source": "deterministic"}

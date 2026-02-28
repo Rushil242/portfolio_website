@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { ArrowRight, ShieldCheck, Zap } from "lucide-react"; // Free icons
@@ -42,7 +41,7 @@ export default function Hero() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="mx-auto max-w-[700px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed"
         >
-          Don't hire more staff. Hire AI. I build custom, secure automation agents that handle your <span className="font-semibold text-gray-800">Sales, Support, and Data Entry</span> 24/7.
+          Don&apos;t hire more staff. Hire AI. I build custom, secure automation agents that handle your <span className="font-semibold text-gray-800">Sales, Support, and Data Entry</span> 24/7.
         </motion.p>
 
         {/* 5. The "Action" Buttons */}
